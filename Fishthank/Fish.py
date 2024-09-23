@@ -12,21 +12,42 @@ NUMBER_AGENT = 100  # Number of agents in the simulation
 COHERENCE_FACTOR = 0.01 # Controls how strongly agents are attracted to the center of mass
 ALIGNMENT_FACTOR = 0.1  # Controls how strongly agents align their direction with others
 SEPARATION_FACTOR = 0.05  # Controls how strongly agents avoid each other
-SEPARATION_DIST = 25  # Minimum distance to maintain between agents
+SEPARATION_DIST = 30  # Minimum distance to maintain between agents
 
 # -----------------------------------------------------------------------
 # Agent class represents each moving entity in the simulation
 # -----------------------------------------------------------------------
 
+class Rock:
+    def __init__(self, x, y) -> None:
+        self.position = pygame.Vector2(x, y)
+        self.spritecount =0
+        self.sprite = [pygame.image.load('rock1.png'), pygame.image.load('rock2.png'), pygame.image.load('rock1.png')]
+    def draw(self, screen):
+        # Draw the agent as a red circle on the screen
+        IMAGE_BIG = pygame.transform.rotozoom(self.sprite[self.spritecount//10], 0, 2)
+        screen.blit(IMAGE_BIG, (self.position.x-64,self.position.y-64))
+        if self.spritecount == 20:
+            self.spritecount = 0
+        else:
+            self.spritecount = self.spritecount+1
+    
 
 class food:
     def __init__(self, x, y) -> None:
         self.position = pygame.Vector2(x, y)
         self.exist = True
+        self.spritecount =0
+        self.sprite = [pygame.image.load('food1.png'), pygame.image.load('food2.png'), pygame.image.load('food1.png')]
 
     def draw(self, screen):
         # Draw the agent as a red circle on the screen
-        pygame.draw.circle(screen, "brown", self.position, 5)  
+        IMAGE_BIG = pygame.transform.rotozoom(self.sprite[self.spritecount//10], 0, 2)
+        screen.blit(IMAGE_BIG, (self.position.x-16,self.position.y-16))
+        if self.spritecount == 20:
+            self.spritecount = 0
+        else:
+            self.spritecount = self.spritecount+1
 
     def eaten():
         self.exist = False
@@ -43,7 +64,7 @@ class Agent:
         self.hunger = 100
         self.sight_range = 100
         self.spritecount =0
-        self.sprite = [pygame.image.load('tile000.png'), pygame.image.load('tile001.png'), pygame.image.load('tile002.png'), pygame.image.load('tile003.png'), pygame.image.load('tile004.png'), pygame.image.load('tile005.png'), pygame.image.load('tile006.png'), pygame.image.load('tile007.png')]
+        self.sprite = [pygame.image.load('fish0.png'), pygame.image.load('fish1.png'), pygame.image.load('fish2.png'), pygame.image.load('fish3.png'),pygame.image.load('fish0.png')]
 
 
     def update(self):
@@ -78,6 +99,13 @@ class Agent:
         seeking_force = d
         self.apply_force(seeking_force.x, seeking_force.y)
 
+    def avoid(self, x, y):
+        # Calculate the direction towards a target point and apply a small force in that direction
+        d = pygame.Vector2(x, y) - self.position
+        d = d.normalize() * 5  # Adjust the force magnitude
+        seeking_force = -d
+        self.apply_force(seeking_force.x, seeking_force.y)
+
     def coherence(self, agents):
         # Steer towards the average position (center of mass) of neighboring agents
         center_of_mass = pygame.Vector2(0, 0)
@@ -108,6 +136,19 @@ class Agent:
         # Apply separation force
         self.apply_force(separation_force.x, separation_force.y)
 
+    def separation_rock(self, agent):
+        # Steer to avoid crowding neighbors (separation behavior)
+        d = pygame.Vector2(0, 0)
+        for agent in agents:
+            if agent != self:
+                dist = self.position.distance_to(agent.position)
+                if dist < 100:  # Only consider agents within separation distance
+                    d += self.position - agent.position
+
+        separation_force = d * SEPARATION_FACTOR  
+        # Apply separation force
+        self.apply_force(separation_force.x, separation_force.y)
+
     def alignment(self, agents):
         # Steer towards the average heading (velocity) of nearby agents (alignment behavior)
         v = pygame.Vector2(0, 0)
@@ -127,9 +168,10 @@ class Agent:
     def draw(self, screen):
         # Draw the agent as a red circle on the screen
       #  pygame.draw.circle(screen, "red", self.position, 10)
-        IMAGE_BIG = pygame.transform.rotozoom(self.sprite[self.spritecount//5], 0, 2)
-        screen.blit(IMAGE_BIG, (self.position.x-32,self.position.y-16))
-        if self.spritecount == 30:
+        
+        IMAGE_BIG = pygame.transform.rotozoom(self.sprite[self.spritecount//10], 0, 1.5)
+        screen.blit(IMAGE_BIG, (self.position.x-32,self.position.y-32))
+        if self.spritecount == 40:
             self.spritecount = 0
         else:
             self.spritecount = self.spritecount+1
@@ -143,7 +185,7 @@ pygame.init()
 # Create a window with the specified dimensions
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()  # Initialize a clock to manage frame rate
-
+BG = [pygame.image.load('bg1.png'), pygame.image.load('bg2.png'), pygame.image.load('bg3.png'), pygame.image.load('bg4.png'),pygame.image.load('bg1.png')]
 # Set up font for displaying FPS (frames per second)
 font = pygame.font.Font(None, 36)
 # Create a list of agents at random positions within the screen
@@ -151,7 +193,8 @@ agents = [Agent(random.uniform(0, WIDTH), random.uniform(0, HEIGHT))
           for _ in range(NUMBER_AGENT)]
 
 foods = []
-
+bgcount =0
+rocks = [Rock(200,200),Rock(1000,500)]
 # ----- GAME LOOP ------------
 running = True  # Variable to control the main loop
 while running:
@@ -160,11 +203,25 @@ while running:
             running = False
         if event.type == pygame.MOUSEBUTTONDOWN:
              traget = pygame.mouse.get_pos()
-             F = food(traget[0],traget[1])
-             foods.append(F)
+             p = pygame.Vector2(traget[0],traget[1])
+             Fo = True
+             for R in rocks:
+                dist = R.position.distance_to(p)
+                if dist<=50:
+                    Fo= False
+             
+             if Fo:
+                F = food(traget[0],traget[1])
+                foods.append(F)
 
     # Fill the screen with gray color to clear the previous frame
-    screen.fill("mediumturquoise")
+    screen.blit(BG[bgcount//10], (0,0))
+    if bgcount == 40:
+            bgcount = 0
+    else:
+           bgcount = bgcount+1
+
+
     if len(foods)!=0:
         for f in foods:
             if f.exist :
@@ -173,6 +230,9 @@ while running:
                 foods.remove(f)
 
     # Update and draw each agent on the screen
+    for R in rocks:
+        R.draw(screen)
+        
     for agent in agents:
         # Uncomment the next line to make agents seek towards a fixed point (e.g., the center of the screen)
   
@@ -180,10 +240,15 @@ while running:
         agent.coherence(agents)  # Apply coherence behavior
         agent.separation(agents)  # Apply separation behavior
         agent.alignment(agents)  # Apply alignment behavior
+        #agent.separation_rock(rocks)
+        for r in rocks:
+              d = agent.position.distance_to(r.position)
+              if d <= 100:
+                agent.avoid(r.position.x,r.position.y)
         if len(foods)!=0:
             for f in foods:
                 d = agent.position.distance_to(f.position)
-                if d <= 10:
+                if d <= 20:
                     f.exist = False
                     agent.eatfood()
                 else:

@@ -51,7 +51,7 @@ D = pygame.Vector2(380,120)
 Invent = [0,0,0,0]# 0=dirt. 1 irom 2 gold 3 diamond
 #chance diamond 10  gold  30  iron 70
 No = ["No", "Nope", "Nuh uh", "Mine Harder!"]
-broke = fix(30,3)
+broke = fix(30,4)
 broke.setseed(seed)
 # ----- GAME LOOP ------------
 running = True  # Variable to control the main loop

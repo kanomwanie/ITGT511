@@ -2,6 +2,7 @@ import random
 
 class MarbleBag:
     def __init__(self, o_bag):
+        assert o_bag != [] , "Input array must not be empty"
         self.bag = []
         self.o_bag = o_bag
     
@@ -16,6 +17,7 @@ class MarbleBag:
     
 class Predeteermination():
          def __init__(self,max_attempts)-> None:
+            assert max_attempts >=0 , "max attempts must be more than 0"
             self.attempts = 0
             self.max_attempts = max_attempts
 
@@ -32,6 +34,7 @@ class Predeteermination():
               
 class progressive():
     def __init__(self, success_rate, increment) -> None:
+        assert success_rate >=0 and success_rate <=100, "success rate must be between 0-100"
         self.base_success_rate = success_rate
         self.current_success_rate = self.base_success_rate
         self.increment = increment
@@ -55,6 +58,7 @@ class progressive():
         
 class fixedReateProb():
     def __init__(self,probability,fixed_sucess_rate)-> None:
+          assert fixed_sucess_rate >=0 , "fixed rate must be more than 0"
           self.attempt_count = 0
           self.fixed_sucess_rate = fixed_sucess_rate
           self.based_probability = probability

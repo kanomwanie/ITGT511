@@ -1,6 +1,8 @@
 # Example file showing a basic pygame "game loop"
 import pygame
 import random
+from Enum import Enum
+import math
 
 # Set up the screen dimensions and maximum speed for agents
 WIDTH = 1280
@@ -22,7 +24,62 @@ ALERT_STATE=4
 # -----------------------------------------------------------------------
 # Agent class represents each moving entity in the simulation
 # -----------------------------------------------------------------------
+class AgentState(Enum):
+    PRATROL_STATE =0 
+    IDEL_STATE = 1
+    CHASE_STATE =2
+    INVES_STATE = 3
+    ALERT_STATE=4
 
+class State(ABC):
+    @abstractmethode
+    def enter(self, agent):
+        pass
+
+    @abstractmethode
+    def update(self, agent,target):
+        pass
+    @abstractmethode
+    def exit(self, agent):
+        pass
+
+class PatrolState():
+    def enter(self, agent):
+        pass
+
+    def update(self, agent):
+        pass
+
+    def exit(self, agent):
+        pass
+
+class ChaseState():
+    def enter(self, agent):
+        pass
+
+    def update(self, agent):
+        pass
+
+    def exit(self, agent):
+        pass
+
+class Statemachine():
+    def __init__(self) -> None:
+        self.states = {
+            'patrol':PatrolState,
+            'chase': ChaseState
+        }
+        self.current_state= 'patrol'
+    
+    def update(self, agent, target):
+        new_state = self.current_state.update(agent,target)
+        if new_state:
+            self.transition_to(agent,new_state)
+
+    def transition_to(self,agent,new_state):
+        self.current_state.exit(agent)
+        self.current_state = new_state
+        self.current_state.enter(agent)
 
 class Agent:
     def __init__(self, x, y,) -> None:
@@ -39,16 +96,17 @@ class Agent:
         self.sprite = [pygame.image.load('fish0.png'), pygame.image.load('fish1.png'), pygame.image.load('fish2.png'), pygame.image.load('fish3.png'),pygame.image.load('fish0.png')]
 
 
-    def update(self):
+    def update(self,target):
         # Update velocity and position of the agent based on current acceleration
-        self.velocity += self.acceleration
-        if self.velocity.length() > MAX_SPEED:
-            # Limit the speed to MAX_SPEED
-            self.velocity = self.velocity.normalize() * MAX_SPEED
-        self.position += self.velocity
-        # Reset acceleration after each update
-        self.acceleration = pygame.Vector2(0, 0)
+         a= pygame.Vector(0,0)
+         if self.current_state == PRATROL_STATE:
+            self.velocity.x= random.randint(0,600)
+            self.velocity.y= random.randint(0,600)
+            if self.velocity.length()>MAX_SPEED:
+                self.velocity.scale_to_length(MAX_SPEED)
+            self.position+=self.velocity
 
+            dist = (target - self.position)
     def apply_force(self, x, y):
         # Apply a force to the agent, adjusting acceleration based on mass
         force = pygame.Vector2(x, y)

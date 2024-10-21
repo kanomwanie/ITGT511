@@ -1,234 +1,372 @@
-# Example file showing a basic pygame "game loop"
 import pygame
 import random
-from Enum import Enum
+import pygame_gui
 import math
+from enum import Enum
+from abc import ABC, abstractmethod
 
-# Set up the screen dimensions and maximum speed for agents
-WIDTH = 1280
-HEIGHT = 720
-MAX_SPEED = 5
-NUMBER_AGENT = 100  # Number of agents in the simulation
+WIDTH, HEIGHT = 800, 600
+NUM_AGENTS = 1
+FISH_SIZE = 5
+FOOD_SIZE = 3
+MAX_SPEED = 2
+NUM_BONE = 5
+SOUND_AREA = 70
 
-# Factors controlling the behavior of the agents
-COHERENCE_FACTOR = 0.01 # Controls how strongly agents are attracted to the center of mass
-ALIGNMENT_FACTOR = 0.1  # Controls how strongly agents align their direction with others
-SEPARATION_FACTOR = 0.05  # Controls how strongly agents avoid each other
-SEPARATION_DIST = 30  # Minimum distance to maintain between agents
-PRATROL_STATE =0 
-IDEL_STATE = 1
-CHASE_STATE =2
-STATE=0
-INVES_STATE = 3
-ALERT_STATE=4
-# -----------------------------------------------------------------------
-# Agent class represents each moving entity in the simulation
-# -----------------------------------------------------------------------
+
+pygame.init()
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+manager = pygame_gui.UIManager((WIDTH, HEIGHT))
+food_rate_slider = pygame_gui.elements.UIHorizontalSlider(
+    relative_rect=pygame.Rect((10, 10), (200, 20)),
+    start_value=500,
+    value_range=(100, 2000),
+    manager=manager
+)
+pygame.display.set_caption("State Machine")
+
+# Load Orc Sprite Sheet
+
+# Animation frame rate
+FRAME_RATE = 0.4
+
+# States------------
 class AgentState(Enum):
-    PRATROL_STATE =0 
-    IDEL_STATE = 1
-    CHASE_STATE =2
-    INVES_STATE = 3
-    ALERT_STATE=4
-
-class State(ABC):
-    @abstractmethode
-    def enter(self, agent):
-        pass
-
-    @abstractmethode
-    def update(self, agent,target):
-        pass
-    @abstractmethode
-    def exit(self, agent):
-        pass
-
-class PatrolState():
-    def enter(self, agent):
-        pass
-
-    def update(self, agent):
-        pass
-
-    def exit(self, agent):
-        pass
-
-class ChaseState():
-    def enter(self, agent):
-        pass
-
-    def update(self, agent):
-        pass
-
-    def exit(self, agent):
-        pass
-
-class Statemachine():
+    PATROL_STATE = 0
+    CHASE_STATE = 1
+    IDLE_STATE = 2
+    INVEST_STATE= 3
+#---------------------
+class StateMachine():
     def __init__(self) -> None:
         self.states = {
-            'patrol':PatrolState,
-            'chase': ChaseState
+            'patrol': PatrolState(),
+            'chase': ChaseState(),
+            'idle': IdleState(),
+            'Invest': InvestState()
         }
-        self.current_state= 'patrol'
-    
-    def update(self, agent, target):
-        new_state = self.current_state.update(agent,target)
+        self.curret_state = 'idle'
+
+    def update(self, agent, target,bone):
+        new_state = self.states[self.curret_state].update(agent, target,bone)
         if new_state:
-            self.transition_to(agent,new_state)
+            self.transition_to(agent, new_state)
 
-    def transition_to(self,agent,new_state):
-        self.current_state.exit(agent)
-        self.current_state = new_state
-        self.current_state.enter(agent)
-
-class Agent:
-    def __init__(self, x, y,) -> None:
-        # Initialize agent's position and velocity with random values
-        self.position = pygame.Vector2(x, y)
-        self.velocity = pygame.Vector2(
-            random.uniform(-MAX_SPEED, MAX_SPEED), random.uniform(-MAX_SPEED, MAX_SPEED))
-        self.acceleration = pygame.Vector2(0, 0)
-        self.mass = 1  # Mass of the agent used in force calculation
-        self.hunger = 100
-        self.sight_range = 100
-        self.current_state = IDEL_STATE
-        self.spritecount =0
-        self.sprite = [pygame.image.load('fish0.png'), pygame.image.load('fish1.png'), pygame.image.load('fish2.png'), pygame.image.load('fish3.png'),pygame.image.load('fish0.png')]
+    def transition_to(self, agent, new_state):
+        self.states[self.curret_state].exit(agent)
+        self.curret_state = new_state
+        self.states[self.curret_state].enter(agent)
 
 
-    def update(self,target):
-        # Update velocity and position of the agent based on current acceleration
-         a= pygame.Vector(0,0)
-         if self.current_state == PRATROL_STATE:
-            self.velocity.x= random.randint(0,600)
-            self.velocity.y= random.randint(0,600)
-            if self.velocity.length()>MAX_SPEED:
-                self.velocity.scale_to_length(MAX_SPEED)
-            self.position+=self.velocity
 
-            dist = (target - self.position)
-    def apply_force(self, x, y):
-        # Apply a force to the agent, adjusting acceleration based on mass
-        force = pygame.Vector2(x, y)
-        self.acceleration += force / self.mass
+class State(ABC):
+    @abstractmethod
+    def enter(self, agent):
+        pass
+
+    @abstractmethod
+    def update(self, agent, target,bone):
+        pass
     
+    @abstractmethod
+    def exit(self, agent):
+        pass
 
-    def seek(self, x, y):
-        # Calculate the direction towards a target point and apply a small force in that direction
-        d = pygame.Vector2(x, y) - self.position
-        d = d.normalize() * 0.1  # Adjust the force magnitude
-        seeking_force = d
-        self.apply_force(seeking_force.x, seeking_force.y)
+class PatrolState(State):
+    def enter(self, agent):
+        print("patrol")
+
+    def update(self, agent, target,bone):
+        agent.velocity.x = random.randint(0, 600)
+        agent.velocity.y = random.randint(0, 600)
+        if agent.velocity.length() > MAX_SPEED:
+            agent.velocity.scale_to_length(MAX_SPEED)
+        agent.position += agent.velocity
+
+        # transition that could change to other stages
+        dist=(target[0].position - agent.position).length()
+        for i in target:
+             d = (i.position - agent.position).length()
+             if abs(d) < dist:
+                dist = d
+        if dist < 50:
+            return 'chase'
+        elif agent.timer ==0:
+            agent.reset()
+            return 'idle'
+        else:
+            chase = False
+            A=0
+            dist=(bone[0].position - agent.position).length()
+            for i in range(len(bone)):
+                if bone[i].status:
+                    d = (bone[i].position - agent.position).length()
+                    if abs(d) <= dist and d<=SOUND_AREA:
+                        dist = d
+                        chase = True
+                        A=bone[i]
+
+            if dist <= SOUND_AREA and chase:
+                agent.hear(A)
+                return 'Invest'
+      
+
+    def exit(self, agent):
+        pass
+
+class InvestState(State):
+    def enter(self, agent):
+        print("invest")
+
+    def update(self, agent, target,bone):
+       A = agent.alertt
+       a = (A.position - agent.position).normalize() * 5
+       agent.velocity += a
+       if agent.velocity.length() > MAX_SPEED:
+            agent.velocity.scale_to_length(MAX_SPEED)
+       agent.position += agent.velocity
+
+        # transition that could change to other stages
+       di=(target[0].position - agent.position).length()
+       for i in target:
+             d = (i.position - agent.position).length()
+             if abs(d) < di:
+                di = d
+       if di < 50:
+            return 'chase'
+       else:
+        dist = (A.position - agent.position).length()
+        if dist < 1:
+                agent.reset()
+                return 'idle'
 
 
-    def coherence(self, agents):
-        # Steer towards the average position (center of mass) of neighboring agents
-        center_of_mass = pygame.Vector2(0, 0)
-        agent_in_range_count = 0
-        for agent in agents:
-            if agent != self:
-                dist = self.position.distance_to(agent.position)
-                if dist < 100:  # Only consider nearby agents within 100 units
-                    center_of_mass += agent.position
-                    agent_in_range_count += 1
+    def exit(self, agent):
+        pass
 
-        if agent_in_range_count > 0:
-            center_of_mass /= agent_in_range_count  # Calculate average position
-            d = center_of_mass - self.position
-            f = d * COHERENCE_FACTOR  
-            self.apply_force(f.x, f.y)  # Apply coherence force
+class ChaseState(State):
+    def enter(self, agent):
+        print("chase")
 
-    def separation(self, agents):
-        # Steer to avoid crowding neighbors (separation behavior)
-        d = pygame.Vector2(0, 0)
-        for agent in agents:
-            if agent != self:
-                dist = self.position.distance_to(agent.position)
-                if dist < SEPARATION_DIST:  # Only consider agents within separation distance
-                    d += self.position - agent.position
+    def update(self, agent, target,bone):
+        W=0
+        dist=(target[0].position - agent.position).length()
+        for i in range(len(target)) :
+             d = (target[i].position - agent.position).length()
+             if abs(d) < dist:
+                W =i
+                
+        a = (target[W].position - agent.position).normalize() * 5
+        agent.velocity += a
+        if agent.velocity.length() > MAX_SPEED:
+            agent.velocity.scale_to_length(MAX_SPEED)
+        agent.position += agent.velocity
 
-        separation_force = d * SEPARATION_FACTOR  
-        # Apply separation force
-        self.apply_force(separation_force.x, separation_force.y)
+        # transition that could change to other stages
+        dist=(target[0].position - agent.position).length()
+        for i in range(len(target)) :
+             d = (target[i].position - agent.position).length()
+             if abs(d) < dist:
+                dist = d
+                W =i
+        if dist >= 100:
+            agent.reset()
+            return 'patrol'
+        if dist <= 32:
+            target[i].ded()
+            agent.reset()
+            return 'idle'
 
-    def separation_rock(self, agent):
-        # Steer to avoid crowding neighbors (separation behavior)
-        d = pygame.Vector2(0, 0)
-        for agent in agents:
-            if agent != self:
-                dist = self.position.distance_to(agent.position)
-                if dist < 100:  # Only consider agents within separation distance
-                    d += self.position - agent.position
+    def exit(self, agent):
+        pass
 
-        separation_force = d * SEPARATION_FACTOR  
-        # Apply separation force
-        self.apply_force(separation_force.x, separation_force.y)
 
-    def alignment(self, agents):
-        # Steer towards the average heading (velocity) of nearby agents (alignment behavior)
-        v = pygame.Vector2(0, 0)
-        agent_in_range_count = 0
-        for agent in agents:
-            if agent != self:
-                dist = self.position.distance_to(agent.position)
-                if dist < 100:  # Only consider nearby agents within 100 units
-                    v += agent.velocity
-                    agent_in_range_count += 1
+class IdleState(State):
+    def enter(self, agent):
+       
+       print("idle")
 
-        if agent_in_range_count > 0:
-            v /= agent_in_range_count  # Calculate average velocity
-            alignment_force = v * ALIGNMENT_FACTOR  # Apply alignment force
-            self.apply_force(alignment_force.x, alignment_force.y)
+    def update(self, agent, target,bone):
+        if agent.timer == 0:
+            agent.reset()
+            return 'patrol'
+        else:
+
+            dist=(target[0].position - agent.position).length()
+            for i in target:
+                d = (i.position - agent.position).length()
+                if abs(d) < dist:
+                    dist = d
+            if dist < 50:
+                return 'chase'
+            chase = False
+            A=0
+            dist=(bone[0].position - agent.position).length()
+            for i in range(len(bone)):
+                if bone[i].status:
+                    d = (bone[i].position - agent.position).length()
+                    if abs(d) <= dist and d<=SOUND_AREA:
+                        dist = d
+                        chase = True
+                        A=bone[i]
+
+            if dist <= SOUND_AREA and chase:
+                agent.hear(A)
+                return 'Invest'
+    def exit(self, agent):
+        pass
+
+class Robber:
+    def __init__(self,x,y):
+        self.position = pygame.Vector2(x, y)
+        self.sprite = pygame.image.load('gnome.png')
+        self.status = True
+        self.velocity = pygame.Vector2(random.uniform(-1, 1), random.uniform(-1, 1)).normalize() * MAX_SPEED
+
+    def ded(self):
+        self.status = False
+
+    def update(self):
+        self.velocity.x = random.randint(0, 600)
+        self.velocity.y = random.randint(0, 600)
+        if self.velocity.length() > MAX_SPEED:
+            self.velocity.scale_to_length(MAX_SPEED)
+        self.position += self.velocity
+
+        if self.position.x > WIDTH:
+            self.position.x = 0
+        elif self.position.x < 0:
+            self.position.x = WIDTH
+        if self.position.y > HEIGHT:
+            self.position.y = 0
+        elif self.position.y < 0:
+            self.position.y = HEIGHT
+
 
     def draw(self, screen):
-        # Draw the agent as a red circle on the screen
-      #  pygame.draw.circle(screen, "red", self.position, 10)
+        screen.blit(self.sprite, (self.position.x-32,self.position.y-32))
+
+
+class Bone:
+    def __init__(self,x,y):
+        self.position = pygame.Vector2(x, y)
+        self.sprite = pygame.image.load('bone.png')
+        self.status = False
+        self.red = SOUND_AREA
+        self.anim = 1
+    
+    def alert(self):
+        self.status=True
+
+    def draw(self, screen):
+        if self.status:
+           pygame.draw.circle(screen, (255, 0, 0), (int(self.position.x-16), int(self.position.y-16)), self.anim)
+           self.anim +=1
+           if self.anim>self.red:
+               self.anim=1
+               self.status=False
+        screen.blit(self.sprite, (self.position.x-32,self.position.y-32))
+
+
+class Agent:
+    def __init__(self):
+        self.position = pygame.Vector2(random.uniform(0, WIDTH), random.uniform(0, HEIGHT))
+        self.velocity = pygame.Vector2(random.uniform(-1, 1), random.uniform(-1, 1)).normalize() * MAX_SPEED
+        self.frame_index = 0
+        self.state_machine = StateMachine()
+        self.alertt=0
+        self.timer = 50
+        self.sprite = pygame.image.load('Guard.png')
+
+    def update(self, target,B):
+        self.state_machine.update(self, target,B)
+        self.timer -=1 
+        # Warp around
+        if self.position.x > WIDTH:
+            self.position.x = 0
+        elif self.position.x < 0:
+            self.position.x = WIDTH
+        if self.position.y > HEIGHT:
+            self.position.y = 0
+        elif self.position.y < 0:
+            self.position.y = HEIGHT
+
+        return True
+    def reset(self):
+        self.timer = 50
+
+    def hear(self,target):
+        self.alertt = target
+
+    def draw(self, screen):
+        # Update frame index for animation
+        current_frame =self.sprite
+        if self.velocity.x < 0:
+            current_frame = pygame.transform.flip(self.sprite, True, False)
+
+        if self.state_machine.curret_state == 'patrol':
+            screen.blit(current_frame, (self.position.x-32,self.position.y-32))
+        elif self.state_machine.curret_state == 'chase':
+           screen.blit(current_frame, (self.position.x-32,self.position.y-32))
+        elif self.state_machine.curret_state == 'idle':
+           screen.blit(current_frame, (self.position.x-32,self.position.y-32))
+        elif self.state_machine.curret_state == 'Invest':
+           screen.blit(current_frame, (self.position.x-32,self.position.y-32))
         
-        IMAGE_BIG = pygame.transform.rotozoom(self.sprite[self.spritecount//10], 0, 1.5)
-        screen.blit(IMAGE_BIG, (self.position.x-32,self.position.y-32))
-        if self.spritecount == 40:
-            self.spritecount = 0
-        else:
-            self.spritecount = self.spritecount+1
-        
 
 
-# -----------------------------------------------------------------------
-#  Begin 
-# -----------------------------------------------------------------------
-pygame.init()
-# Create a window with the specified dimensions
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-clock = pygame.time.Clock()  # Initialize a clock to manage frame rate
-BG = [pygame.image.load('bg1.png'), pygame.image.load('bg2.png'), pygame.image.load('bg3.png'), pygame.image.load('bg4.png'),pygame.image.load('bg1.png')]
-# Set up font for displaying FPS (frames per second)
-font = pygame.font.Font(None, 36)
-# Create a list of agents at random positions within the screen
-agents = [Agent(random.uniform(0, WIDTH), random.uniform(0, HEIGHT))
-          for _ in range(NUMBER_AGENT)]
-
-foods = []
-bgcount =0
-rocks = [Rock(200,200),Rock(1000,500)]
-# ----- GAME LOOP ------------
-running = True  # Variable to control the main loop
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:  # Check if the user closed the window
-            running = False
-        if event.type == pygame.MOUSEBUTTONDOWN:
-              pass
-
-    # Fill the screen with gray color to clear the previous frame
-    screen.blit(BG[bgcount//10], (0,0))
+# ------------------------------------------------------------------------------------------------
 
 
-    # Calculate and display FPS (frames per second) in the top-right corner of the screen
-    fps = int(clock.get_fps())
-    fps_text = font.render(f"FPS: {fps}", True, pygame.Color('white'))
-    screen.blit(fps_text, (WIDTH - fps_text.get_width() - 10, 10))
+def main():
+    agents = [Agent() for _ in range(NUM_AGENTS)]
+    Gnome = []
+    Bones = [Bone(random.uniform(10, WIDTH), random.uniform(10, HEIGHT))
+          for _ in range(NUM_BONE)]
+    clock = pygame.time.Clock()
 
-    pygame.display.flip()  # Update the screen with the drawn frame
-    clock.tick(60)  # Limit the frame rate to 60 frames per second
+    running = True
+    while running:
+        time_delta = clock.tick(60) / 1000.0
+        screen.fill((100, 100, 100))
+        manager.update(time_delta)
 
-pygame.quit()  # Clean up and close the game window when the loop ends
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            manager.process_events(event)
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                traget = pygame.mouse.get_pos()
+                GN = Robber(traget[0],traget[1])
+                Gnome.append(GN)
+
+        screen.fill("darkslateblue")
+        #agents = [fish for fish in agents if fish.update(target)]
+        for B in Bones:
+            if not B.status:
+                for G in Gnome:
+                    dist = (B.position - G.position).length()
+                    if dist<=30:
+                        B.alert()
+            B.draw(screen)
+        for GN in Gnome:
+            if not GN.status:
+                Gnome.remove(GN)
+            else:
+              GN.update()
+              GN.draw(screen)
+        for agent in agents:
+            if len(Gnome)!=0:
+             agent.update(Gnome,Bones)
+            agent.draw(screen)
+
+
+
+        manager.draw_ui(screen)
+        pygame.display.flip()
+        clock.tick(60)
+
+    pygame.quit()
+
+if __name__ == "__main__":
+    main()

@@ -198,22 +198,24 @@ class Dijkstra:
         self.edgeCount=0
         self.dist=[]
         self.prev=[]
-        self.graph= self.createEmptyGraph(self.n)
+        self.graph= self.createEmptyGraph()
 
     def createEmptyGraph(self):
         A = [None] * self.n
-        for i in range(self.n):
-            A.append([])
+        #for i in range(self.n):
+           # A.append([])
         return A
+    
     def addEdge(self,fromm, to, cost):
         self.edgeCount+=1
-        self.graph.index(fromm).append(Edge(to, cost))
+        self.graph[fromm]= Edge(to, cost)
 
     def dijkstra(self, start, end):
 
     # Keep an Indexed Priority Queue (ipq) of the next most promising node to visit.
         degree = self.edgeCount / self.n
-        ipq = MinIndexedDHeap (degree, self.n)
+        ipq =  MinIndexedDHeap()
+        ipq.MinIndexedDHeap(degree, self.n)
         ipq.insert(start, 0.0)
 
         # Maintain an array of the minimum distance to each node.
@@ -223,8 +225,8 @@ class Dijkstra:
 
         visited = []*self.n
         prev =[]*self.n
-
-        while not len(ipq)!=0 :
+        print(ipq.size)
+        while not ipq.size !=0 :
             nodeId = ipq.peekMinKeyIndex()
 
             visited[nodeId] = True
@@ -281,8 +283,8 @@ class Dijkstra:
     
 class MinIndexedDHeap:
 
-    def __init__(self,n) -> None:
-        self.sz
+    def __init__(self) -> None:
+        self.sz=0
         self.N=0
         self.D=0
         self.child=[]
@@ -299,12 +301,11 @@ class MinIndexedDHeap:
       self.D = max(2, degree)
       self.N = max(self.D + 1, maxSize)
 
-      self.im = []*self.N
-      self.pm = []*self.N
-      self.child = []*self.N
-      self.parent = []*self.N
-      self.values = []*self.N
-
+      self.im = [0 for _ in range(self.N)]
+      self.pm = [0 for _ in range(self.N)]
+      self.child = [0 for _ in range(self.N)]
+      self.parent = [0 for _ in range(self.N)]
+      self.values = [0 for _ in range(self.N)]
       for i in range(self.N) :
         self.parent[i] = (i - 1) / self.D
         self.child[i] = i * self.D + 1
@@ -322,6 +323,7 @@ class MinIndexedDHeap:
 
     def contains(self, ki) :
       self.keyInBoundsOrThrow(ki)
+      print(ki)
       return self.pm[ki] != -1
     
 
@@ -353,7 +355,9 @@ class MinIndexedDHeap:
       self.pm[ki] = self.sz
       self.im[self.sz] = ki
       self.values[ki] = value
-      self.swim(self.sz+1)
+      self.sz +=1
+      print(self.sz)
+      self.swim(self.sz)
 
     def valueOf(self, ki) :
       self.keyExistsOrThrow(ki,self.values)
@@ -362,7 +366,9 @@ class MinIndexedDHeap:
     def delete(self, ki) :
       self.keyExistsOrThrow(ki,self.pm)
       i = self.pm[ki]
-      self.swap(i,self.sz-1)
+      self.sz-=1
+      print(self.sz)
+      self.swap(i,self.sz)
       self.sink(i)
       self.swim(i)
       value = self.values[ki]
@@ -440,7 +446,7 @@ class MinIndexedDHeap:
     #// Tests if the value of node i < node j
    # @SuppressWarnings("unchecked")
     def less(self, i, j) :
-      return ( self.values[ self.im[i]]- self.values[ self.im[j]]) < 0
+      return ( self.values[ self.im[int(i)]]- self.values[ self.im[int(j)]]) < 0
       #return ((Comparable<? super T>) values[im[i]]).compareTo((T) values[im[j]]) < 0
     
 

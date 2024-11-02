@@ -49,5 +49,5 @@ C.addEdge(8,3,0)
 C.addEdge(8,4,0)
 C.addEdge(9,3,1)
 C.addEdge(9,4,0)
-C.dijkstra(0,9)
+print(C.dijkstra(0,9))
 

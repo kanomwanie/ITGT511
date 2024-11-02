@@ -109,7 +109,6 @@ class BFS:
 
     def start(self):
         self.BFSinit()
-       # print(self.m)
         self.tomap()
         print(self.solve())
 
@@ -201,14 +200,14 @@ class Dijkstra:
         self.graph= self.createEmptyGraph()
 
     def createEmptyGraph(self):
-        A = [None] * self.n
+        A = [[] for _ in range(self.n)]
         #for i in range(self.n):
            # A.append([])
         return A
     
     def addEdge(self,fromm, to, cost):
         self.edgeCount+=1
-        self.graph[fromm]= Edge(to, cost)
+        self.graph[fromm].append(Edge(to, cost))
 
     def dijkstra(self, start, end):
 
@@ -219,24 +218,22 @@ class Dijkstra:
         ipq.insert(start, 0.0)
 
         # Maintain an array of the minimum distance to each node.
-        dist = [float('inf') for _ in range(self.n)]
+        self.dist = [float('inf') for _ in range(self.n)]
        # Arrays.fill(dist, float('inf'))
-        dist[start] = 0.0
+        self.dist[start] = 0.0
 
-        visited = []*self.n
-        prev =[]*self.n
-        print(ipq.size)
-        while not ipq.size !=0 :
+        visited = [False for _ in range(self.n)]
+        self.prev =[None for _ in range(self.n)]
+        while not (ipq.size() ==0) :
             nodeId = ipq.peekMinKeyIndex()
-
             visited[nodeId] = True
             minValue = ipq.pollMinValue()
 
         #We already found a better path before we got to processing this node so we can ignore it.
             if (minValue > self.dist[nodeId]):
                 continue
-
-            for edge in self.graph.index(nodeId) :
+            print(nodeId)
+            for edge in self.graph[nodeId] :
 
                # We cannot get a shorter path by revisiting a node we have already visited before.
                 if (visited[edge.to]) :
@@ -244,11 +241,11 @@ class Dijkstra:
 
                 # Relax edge by updating minimum cost if applicable.
                 newDist = self.dist[nodeId] + edge.cost
-                if (newDist < dist[edge.to]) :
+                if (newDist < self.dist[edge.to]) :
                     self.prev[edge.to] = nodeId
                     self.dist[edge.to] = newDist
                     # Insert the cost of going to a node for the first time in the PQ, or try and update it to a better value by calling decrease.
-                    if not ipq in edge.to:
+                    if not (ipq.contains(edge.to)) :
                          ipq.insert(edge.to, newDist)
                     else:
                           ipq.decrease(edge.to, newDist)
@@ -257,8 +254,8 @@ class Dijkstra:
         #// Once we've processed the end node we can return early (without
         #// necessarily visiting the whole graph) because we know we cannot get a
         #// shorter path by routing through any other nodes since Dijkstra's is // greedy and there are no negative edge weights.
-        if (nodeId == end):
-            return dist[end]
+            if (nodeId == end):
+                return dist[end]
 
         #// End node is unreachable.
         return float('inf')
@@ -323,7 +320,6 @@ class MinIndexedDHeap:
 
     def contains(self, ki) :
       self.keyInBoundsOrThrow(ki)
-      print(ki)
       return self.pm[ki] != -1
     
 
@@ -339,7 +335,7 @@ class MinIndexedDHeap:
     
 
     def peekMinValue(self) :
-      self.isNotEmptyOrThrow()
+      self.isNotEmptyOrThrow(self.im)
       return self.im[0]
     
 
@@ -356,7 +352,6 @@ class MinIndexedDHeap:
       self.im[self.sz] = ki
       self.values[ki] = value
       self.sz +=1
-      print(self.sz)
       self.swim(self.sz)
 
     def valueOf(self, ki) :
@@ -364,10 +359,11 @@ class MinIndexedDHeap:
       return self.values[ki]
 
     def delete(self, ki) :
+      print(self.pm)
+      print(self.im)
       self.keyExistsOrThrow(ki,self.pm)
       i = self.pm[ki]
       self.sz-=1
-      print(self.sz)
       self.swap(i,self.sz)
       self.sink(i)
       self.swim(i)
@@ -429,7 +425,7 @@ class MinIndexedDHeap:
       index = -1
       fromm = self.child[i]
       to = min(self.sz, fromm + self.D)
-      for j in range(fromm, to): 
+      for j in range(int(fromm), to): 
         if (self.less(j, i)):
             index = i = j
       return index

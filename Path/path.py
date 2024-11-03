@@ -1,4 +1,5 @@
-
+from collections import  deque
+import heapq
 # Using a Python dictionary to act as an adjacency list
 #g= {
   #0 : [2,1,3],
@@ -57,12 +58,15 @@ class DFS:
 
     def findComponents(self): 
         for i in range(self.n): 
+            A=-1
             if not self.visited[i]: 
                 self.count +=1
                 A = self.dfs(i) 
-                if A==0:
-                   print("Count "+ str(self.count))
+            if A==0:
+                   
                    return 0
+        print("Count "+ str(self.count))
+        print("Components "+ str(self.components))
         return (self.count, self.components) 
 
     def dfs(self,at): 
@@ -71,12 +75,9 @@ class DFS:
         self.components[at] = self.count 
         self.tomap()
         self.printmap(self.m)
-        if 'E' in self.m[at]:
-           print("Exit Found!")
-           return 0
         for next in self.g[at]: 
-            if not self.visited[next]: 
-                self.dfs(next)
+              if not self.visited[next]: 
+                  self.dfs(next)
     
 
 class BFS:
@@ -110,7 +111,7 @@ class BFS:
     def start(self):
         self.BFSinit()
         self.tomap()
-        print(self.solve())
+        self.solve()
 
     def BFSinit(self):
         for i in range(self.R):
@@ -154,11 +155,12 @@ class BFS:
         while len(self.rq) > 0: # or cq.size() > 0 
             r = self.rq.pop(0)
             c = self.cq.pop(0)
+            self.explore_neighbours(r, c) 
             if self.m[r][c] == "E": 
                 self.reached_end = True 
                 print("Exit Found!")
+                print("Move Count "+ str(self.move_count))
                 break 
-            self.explore_neighbours(r, c) 
             self.nodes_left_in_layer -=1
             if self.nodes_left_in_layer == 0: 
                 self.nodes_left_in_layer = self.nodes_in_next_layer 
@@ -191,304 +193,95 @@ class Edge:
         self.cost = cost
         self.to = to
 
-class Dijkstra:
-    def __init__(self,n) -> None:
-        self.n = n
-        self.edgeCount=0
-        self.dist=[]
-        self.prev=[]
-        self.graph= self.createEmptyGraph()
+class  dijkstra:
+  def __init__(self,node,edg,) -> None:
+        self.edges = edg
+        self.nodes = node
 
-    def createEmptyGraph(self):
-        A = [[] for _ in range(self.n)]
-        #for i in range(self.n):
-           # A.append([])
-        return A
-    
-    def addEdge(self,fromm, to, cost):
-        self.edgeCount+=1
-        self.graph[fromm].append(Edge(to, cost))
+  def checkedge(self, E,N):
+      for i in range(len(N)):
+        if N[i][0] == E:
+            return True
+      return False
+  def checkcost(self,r,c):
+      for i in range(len(self.edges[r])):
+          if self.edges[r][i][0]==c:
+            return self.edges[r][i][1]
 
-    def dijkstra(self, start, end):
+  def tomap(self,S,E,visited):
+        R = len(self.nodes)
+        C = len(self.nodes)
+        m = [[0 for _ in range(C)] for _ in range(R)]
+        for i in range(R):
+            if self.edges[i]!= None:
+                for j in range(C):
+                    m[i][j] = "#"
+                    if len(self.edges[i])!= 0 and  self.checkedge(j,self.edges[i]):
+                        if i==S and j==S:
+                             m[i][j] = "S"
+                        elif i==E and j==E:
+                           m[i][j] = "E"
+                        elif visited[i]:
+                           m[i][j] = "x"
+                        else:    
+                            cost = self.checkcost(i,j)
+                            if cost == 1:
+                              m[i][j] = "o"  
+                            elif cost == 2:
+                              m[i][j] = "0" 
+                            elif cost == 3:
+                              m[i][j] = "O" 
+                            else:
+                              m[i][j] = "."
+        self.printmap(m)
 
-    # Keep an Indexed Priority Queue (ipq) of the next most promising node to visit.
-        degree = self.edgeCount / self.n
-        ipq =  MinIndexedDHeap()
-        ipq.MinIndexedDHeap(degree, self.n)
-        ipq.insert(start, 0.0)
+  def printmap(self,map):
+        print("----------------")
+        for i in map:
+              print(' '.join(i))
+        print("----------------")
 
-        # Maintain an array of the minimum distance to each node.
-        self.dist = [float('inf') for _ in range(self.n)]
-       # Arrays.fill(dist, float('inf'))
-        self.dist[start] = 0.0
 
-        visited = [False for _ in range(self.n)]
-        self.prev =[None for _ in range(self.n)]
-        while not (ipq.size() ==0) :
-            nodeId = ipq.peekMinKeyIndex()
-            visited[nodeId] = True
-            minValue = ipq.pollMinValue()
+  def dijkstra(self,start, end):
+      dist = {node: float('inf') for node in self.nodes}
+      dist[start] = 0
+      pq = [(0, start)]
+      visited_dijkstra = set()
+      v = [False for _ in range(len(self.nodes))]
+      print(". = 0   o = 1   0 = 2   O = 3")
+      self.tomap(start,end,v)
 
-        #We already found a better path before we got to processing this node so we can ignore it.
-            if (minValue > self.dist[nodeId]):
-                continue
-            print(nodeId)
-            for edge in self.graph[nodeId] :
-
-               # We cannot get a shorter path by revisiting a node we have already visited before.
-                if (visited[edge.to]) :
-                    continue
-
-                # Relax edge by updating minimum cost if applicable.
-                newDist = self.dist[nodeId] + edge.cost
-                if (newDist < self.dist[edge.to]) :
-                    self.prev[edge.to] = nodeId
-                    self.dist[edge.to] = newDist
-                    # Insert the cost of going to a node for the first time in the PQ, or try and update it to a better value by calling decrease.
-                    if not (ipq.contains(edge.to)) :
-                         ipq.insert(edge.to, newDist)
-                    else:
-                          ipq.decrease(edge.to, newDist)
-           
-      
-        #// Once we've processed the end node we can return early (without
-        #// necessarily visiting the whole graph) because we know we cannot get a
-        #// shorter path by routing through any other nodes since Dijkstra's is // greedy and there are no negative edge weights.
-            if (nodeId == end):
-                return dist[end]
-
-        #// End node is unreachable.
-        return float('inf')
-    
-    def reconstructPath(self, start,end) :
-        if (end < 0 or end >= self.n) :
-            raise Exception("Invalid node index")
-            #throw new IllegalArgumentException("Invalid node index")
-        if (start < 0 or start >= self.n) :
-            raise Exception("Invalid node index")
-            #throw new IllegalArgumentException("Invalid node index")
-        path = []
-        dist = self.dijkstra(start, end)
-        if (dist == float('inf')) :
-            return path
-        for at in range(end, -1, -1):
-            if at is not None:
-                path.append(at)
-                at =  self.prev[at]
-        path.reverse()
-        return path
-    
-class MinIndexedDHeap:
-
-    def __init__(self) -> None:
-        self.sz=0
-        self.N=0
-        self.D=0
-        self.child=[]
-        self.parent=[]
-        self.pm =[]
-        self.im =[]
-        self.values=[]
-
-  #  // Initializes a D-ary heap with a maximum capacity of maxSize.
-    def MinIndexedDHeap(self, degree, maxSize) :
-      if (maxSize <= 0):
-        raise Exception("maxSize <= 0")
-
-      self.D = max(2, degree)
-      self.N = max(self.D + 1, maxSize)
-
-      self.im = [0 for _ in range(self.N)]
-      self.pm = [0 for _ in range(self.N)]
-      self.child = [0 for _ in range(self.N)]
-      self.parent = [0 for _ in range(self.N)]
-      self.values = [0 for _ in range(self.N)]
-      for i in range(self.N) :
-        self.parent[i] = (i - 1) / self.D
-        self.child[i] = i * self.D + 1
-        self.pm[i] = self.im[i] = -1
-      
-    
-
-    def size(self) :
-      return self.sz
-    
-
-    def isEmpty(self) :
-      return self.sz == 0
-    
-
-    def contains(self, ki) :
-      self.keyInBoundsOrThrow(ki)
-      return self.pm[ki] != -1
-    
-
-    def peekMinKeyIndex(self) :
-      self.isNotEmptyOrThrow(self.im)
-      return self.im[0]
-    
-
-    def pollMinKeyIndex(self) :
-      minki = self.peekMinKeyIndex()
-      self.delete(minki)
-      return minki
-    
-
-    def peekMinValue(self) :
-      self.isNotEmptyOrThrow(self.im)
-      return self.im[0]
-    
-
-    def pollMinValue(self) :
-      minValue = self.peekMinValue()
-      self.delete(self.peekMinKeyIndex())
-      return minValue
-    
-    def insert(self, ki, value):
-      if self.contains(ki) :
-        raise Exception("index already exists; received: " + str(ki))
-      self.valueNotNullOrThrow(value)
-      self.pm[ki] = self.sz
-      self.im[self.sz] = ki
-      self.values[ki] = value
-      self.sz +=1
-      self.swim(self.sz)
-
-    def valueOf(self, ki) :
-      self.keyExistsOrThrow(ki,self.values)
-      return self.values[ki]
-
-    def delete(self, ki) :
-      print(self.pm)
-      print(self.im)
-      self.keyExistsOrThrow(ki,self.pm)
-      i = self.pm[ki]
-      self.sz-=1
-      self.swap(i,self.sz)
-      self.sink(i)
-      self.swim(i)
-      value = self.values[ki]
-      self.values[ki] = None
-      self.pm[ki] = -1
-      self.im[self.sz] = -1
-      return value
-    
-
-    def update(self,ki, value) :
-      self.keyExistsAndValueNotNullOrThrow(ki, value,self.pm)
-      i = self.pm[ki]
-      oldValue = self.values[ki]
-      self.values[ki] = value
-      self.sink(i)
-      self.swim(i)
-      return oldValue
-    
-
-    #// Strictly decreases the value associated with 'ki' to 'value'
-    def decrease(self,ki, value) :
-      self.keyExistsAndValueNotNullOrThrow(ki, value,self.values)
-      if (self.less(value, self.values[ki])) :
-        self.values[ki] = value
-        self.swim(self.pm[ki])
-      
-    
-
-   # // Strictly increases the value associated with 'ki' to 'value'
-    def increase(self, ki, value) :
-      self.keyExistsAndValueNotNullOrThrow(ki, value,self.values)
-      if (self.less(self.values[ki], value)) :
-        self.values[ki] = value
-        self.sink(self.pm[ki])
-      
-    
-
-    #/* Helper functions */
-
-    def sink(self, i) :
-      j = self.minChild(i)
-      while j != -1:
-        self.swap(i, j)
-        i = j
-        j = self.minChild(i)
-      
-    
-
-    def swim(self, i) :
-      while (self.less(i, self.parent[i])):
-        self.swap(i, self.parent[i])
-        i = self.parent[i]
-      
-    
-
-    #// From the parent node at index i find the minimum child below it
-    def minChild(self, i) :
-      index = -1
-      fromm = self.child[i]
-      to = min(self.sz, fromm + self.D)
-      for j in range(int(fromm), to): 
-        if (self.less(j, i)):
-            index = i = j
-      return index
-    
-
-    def swap(self, i, j) :
-      self.pm[self.im[j]] = i
-      self.pm[self.im[i]] = j
-      tmp = self.im[i]
-      self.im[i] = self.im[j]
-      self.im[j] = tmp
-    
-
-    #// Tests if the value of node i < node j
-   # @SuppressWarnings("unchecked")
-    def less(self, i, j) :
-      return ( self.values[ self.im[int(i)]]- self.values[ self.im[int(j)]]) < 0
-      #return ((Comparable<? super T>) values[im[i]]).compareTo((T) values[im[j]]) < 0
-    
-
-    #@SuppressWarnings("unchecked")
-    #def less(self, obj1, obj2) :
-     # return ((Comparable<? super T>) obj1).compareTo((T) obj2) < 0
-    
-
-   # @Override
-    def toString( self) :
-      lst = []* self.sz
-      for i in range( self.sz):
-          lst.append( self.im[i])
-      return " ".join(lst)
-    
-
-    #/* Helper functions to make the code more readable. */
-
-    def isNotEmptyOrThrow(self, IM) :
-      if len(IM)==0 :
-        raise Exception("Priority queue underflow")
-        #throw new NoSuchElementException("Priority queue underflow");
-    
-
-    def keyExistsAndValueNotNullOrThrow(self,ki,  value,PM) :
-      self.keyExistsOrThrow(ki,PM)
-      self.valueNotNullOrThrow(value)
-    
-
-    def keyExistsOrThrow(self, ki,PM) :
-      if not( ki in PM) :
-         raise Exception("Index does not exist; received: " + str(ki))
-       # throw new NoSuchElementException("Index does not exist; received: " + ki);
-    
-
-    def valueNotNullOrThrow(self,value) :
-      if (value == None):
-         raise Exception("value cannot be null")
-         #throw new IllegalArgumentException("value cannot be null");
-    
-
-    def keyInBoundsOrThrow(self, ki) :
-      if (ki < 0 or ki >= self.N):
-         raise Exception("Key index out of bounds; received: " + str(ki))
-        #throw new IllegalArgumentException("Key index out of bounds; received: " + ki);
-    
+      while pq:
+          current_dist, node = heapq.heappop(pq)
+          if node in visited_dijkstra:
+            continue
+          print("visit "+str(node))
+          visited_dijkstra.add(node)
+          v[node] = True
+          self.tomap(start,end,v)
+          
+         # draw_node(node, 'Orange')
+          #pygame.display.update()
+          #pygame.time.delay(500)
+          
+          for neighbor, weight in self.edges.get(node, []):
+              new_dist = current_dist + weight
+              if new_dist < dist[neighbor]:
+                  dist[neighbor] = new_dist
+                  heapq.heappush(pq, (new_dist, neighbor))
+                  #draw_edge(node, neighbor, 'Orange', weight) 
+          
+          #draw_node(node, 'Gray')
+          #pygame.display.update()
+          #pygame.time.delay(500)
+          
+         # pygame.draw.rect(screen, (50, 55, 50), (10, height - 30, width, 30))
+          
+          # dist array
+        #  dist_text = "Dist: " + ", ".join(f"{n}:{dist[n]}" for n in dist)
+         # dist_surface = font.render(dist_text, True, (255, 255, 255))  
+         # screen.blit(dist_surface, (10, height - 30))
+         # pygame.display.update()
 
 
 

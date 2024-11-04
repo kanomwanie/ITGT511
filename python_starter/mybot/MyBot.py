@@ -37,7 +37,7 @@ def findenemy(ship,map):
             map[i].mark_unsafe(ship)
 
 def findsource(ship,map):
-    direcmap = ship.position.get_surrounding_cardinals()
+    direcmap = cantake(map,ship)
     minHa =map[direcmap[0]].halite_amount
     location =direcmap[0]
     for i in direcmap:
@@ -49,15 +49,17 @@ def findsource(ship,map):
 
 def findoff(me,map,ship):
     #find closet drop off
-    all = me.get_dropoffs()
-    L = me.shipyard.position
+    all = candrop(map,me)
     if len(all)!=0:
+        L = all[0]
         for i in all:
-            A = map.calculate_distance(ship.position,i.position)
+            A = map.calculate_distance(ship.position,i)
             B = map.calculate_distance(ship.position,L)
             if B>A:
-                L = i.position
-    return L
+                L = i
+    else:
+        return [True,-1]
+    return [False,L]
 
 def convert_to_direction(pos,next):
     if pos.x-next.x == 1 and pos.y-next.y ==0:
@@ -68,18 +70,44 @@ def convert_to_direction(pos,next):
         return Direction.North
     elif pos.x-next.x == 0 and pos.y-next.y ==-1:
         return Direction.South
+    
+def getmovecost(position,map):
+    return int((100 /map[position].halite_amount)*10)
+
+def candrop(map,me):
+    A=[]
+    all = me.get_dropoffs()
+    if  not map[me.shipyard.position].is_occupied:
+        A.append(me.shipyard.position)
+    if len(all)!=0:
+     for i in all:
+        if not map[i.position].is_occupied:
+            A.append(i.position)
+    return A
+
+def cantake(map,ship):
+    A=[]
+    direcmap = ship.position.get_surrounding_cardinals()
+    for i in direcmap:
+        if not map[i].is_occupied:
+            A.append(i)
+    return A
+
 
 def moving(me,map,ship):
     #if ship nearby - avoid
     #aim fore nearest area with most stuff
     #when full- aim to drop off
     findenemy(ship,map)
-    if ship.is_full or ship.halite_amount > 300:
+    if ship.is_full or ship.halite_amount > 700:
         drop = findoff(me,map,ship)
-        return map.naive_navigate(ship, drop)
+        if drop[0]:
+            return ship.stay_still()
+        else:
+            return ship.move(map.naive_navigate(ship, drop[1]))
     else:
         A = findsource(ship,map)
-        return map.naive_navigate(ship, A)
+        return ship.move( map.naive_navigate(ship, A))
     
 def leasthalite(me):
     K = me.get_ships()
@@ -87,16 +115,18 @@ def leasthalite(me):
     S=K[0]
     A =K[0].halite_amount
     for ship in me.get_ships():
-        if ship.halite_amount ==0:
-            ship.make_dropoff() 
-            T=False
-            break
-        else:
-            if A>ship.halite_amount:
-                A=ship.halite_amount
-                S= ship
+        if T:
+            if ship.halite_amount ==0:
+                ship.make_dropoff() 
+                T=False
+                return [False,ship]
+            else:
+                if A>ship.halite_amount:
+                    A=ship.halite_amount
+                    S= ship
     if T:
-        S.make_dropoff() 
+       command_queue.append( S.make_dropoff() )
+       return [False,S]
     
 
     
@@ -114,24 +144,37 @@ while True:
     # A command queue holds all the commands you will run this turn. You build this list up and submit it at the
     #   end of the turn.
     command_queue = []
+    trundrop = [True,0]
+
     if len(me.get_ships())>5 and me.halite_amount > constants.DROPOFF_COST+1000:
-       leasthalite(me)
+       trundrop = leasthalite(me)
 
     for ship in me.get_ships():
         # For each of your ships, move randomly if the ship is on a low halite location or the ship is full.
         #   Else, collect halite.
 
         #CONVERTSHIP TO DROPOFF IF HAVE MORETHANT 5 AND HAVE MORE THAN 5K
-        if game_map[ship.position].halite_amount < constants.MAX_HALITE / 10 or ship.is_full:
-            command_queue.append(
-                ship.move(
-                    moving(me,game_map,ship)))
+        if trundrop[0]:
+                if game_map[ship.position].halite_amount < constants.MAX_HALITE / 10 or ship.is_full and ship.halite_amount > getmovecost(ship.position,game_map):
+                     command_queue.append(moving(me,game_map,ship))
+                else:
+                    command_queue.append(ship.stay_still())
         else:
-            command_queue.append(ship.stay_still())
+            if trundrop[1]!= ship:
+                if game_map[ship.position].halite_amount < constants.MAX_HALITE / 10 or ship.is_full and ship.halite_amount > getmovecost(ship.position,game_map):
+                    command_queue.append(
+                      
+                            moving(me,game_map,ship))
+                else:
+                    command_queue.append(ship.stay_still())
+
+    #Spawan more when money is 7K and dropoff is less than 5
+    if me.halite_amount >= 10000 and len(me.get_dropoffs())<3:
+         command_queue.append(me.shipyard.spawn())
 
     # If the game is in the first 200 turns and you have enough halite, spawn a ship.
     # Don't spawn a ship if you currently have a ship at port, though - the ships will collide.
-    if len(me.get_ships())<=1 and me.halite_amount >= constants.SHIP_COST and not game_map[me.shipyard].is_occupied:
+    if len(me.get_ships())<=2 and me.halite_amount >= constants.SHIP_COST and not game_map[me.shipyard].is_occupied:
         command_queue.append(me.shipyard.spawn())
 
     # Send your moves back to the game environment, ending this turn.

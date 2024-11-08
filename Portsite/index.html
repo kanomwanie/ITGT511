@@ -1,99 +1,114 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-<title>W3.CSS Template</title>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<style>
-.w3-sidebar a {font-family: "Roboto", sans-serif}
-body,h1,h2,h3,h4,h5,h6,.w3-wide {font-family: "Montserrat", sans-serif;}
+  <title>Final Project</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <style>
+    .w3-sidebar a {
+      font-family: "Roboto", sans-serif
+    }
 
-.column {
-  float: left;
-  width: 50%;
-  padding: 10px;
-}
+    body,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    .w3-wide {
+      font-family: "Montserrat", sans-serif;
+    }
 
-/* Clear floats after the columns */
-.row:after {
-  content: "";
-  display: table;
-  clear: both;
-}
+    .column {
+      float: left;
+      width: 50%;
+      padding: 10px;
+    }
 
-div.scroll-container {
-  background-color: #333;
-  overflow: auto;
-  white-space: nowrap;
-  padding: 10px;
-}
+    /* Clear floats after the columns */
+    .row:after {
+      content: "";
+      display: table;
+      clear: both;
+    }
 
-div.scroll-container img {
-  padding: 10px;
-  width: 200px;
-  height: auto;
-}
+    div.scroll-container {
+      background-color: #333;
+      overflow: auto;
+      white-space: nowrap;
+      padding: 10px;
+    }
 
-</style>
+    div.scroll-container img {
+      padding: 10px;
+      width: 200px;
+      height: auto;
+    }
+  </style>
 </head>
+
 <body class="w3-content" style="max-width:1200px">
 
-<!-- Sidebar/menu -->
-<nav class="w3-sidebar w3-bar-block w3-white w3-collapse w3-top" style="z-index:3;width:250px" id="mySidebar">
-  <div class="w3-container w3-display-container w3-padding-16">
-    <i onclick="w3_close()" class="fa fa-remove w3-hide-large w3-button w3-display-topright"></i>
-    <h3 onclick="hideshow('Top3')" class="w3-wide"><b>6638018</b></h3>
-  </div>
-  <div class="w3-padding-64 w3-large w3-text-grey" style="font-weight:bold">
-    <a onclick="hideshow('Top3')" class="w3-bar-item w3-button">Top 3</a>
-    <a onclick="hideshow('intro')" class="w3-bar-item w3-button">Introduction</a>
-    <a onclick="myAccFunc()" href="javascript:void(0)" class="w3-button w3-block w3-white w3-left-align" id="myBtn">
-        Movement <i class="fa fa-caret-down"></i>
-    </a>
-    <div id="demoAcc" class="w3-bar-block w3-hide w3-padding-large w3-medium">
-      <a onclick="hideshow('Seek')" class="w3-bar-item w3-button">Seeking and Arriving Behavior in Class</a>
-      <a onclick="hideshow('Flee')"  class="w3-bar-item w3-button">Flee behavior</a>
-      <a onclick="hideshow('Projec')" class="w3-bar-item w3-button">Projectile</a>
-      <a onclick="hideshow('pygame')" class="w3-bar-item w3-button">Pygame Agent</a>
-      <a onclick="hideshow('Fish')" class="w3-bar-item w3-button">Fish tank simulation</a>
+  <!-- Sidebar/menu -->
+  <nav class="w3-sidebar w3-bar-block w3-white w3-collapse w3-top" style="z-index:3;width:250px" id="mySidebar">
+    <div class="w3-container w3-display-container w3-padding-16">
+      <i onclick="w3_close()" class="fa fa-remove w3-hide-large w3-button w3-display-topright"></i>
+      <h3 onclick="hideshow('Top3')" class="w3-wide"><b>6638018</b></h3>
     </div>
-    <a onclick="hideshow('Random')" class="w3-bar-item w3-button">Randomness</a>
-    <a onclick="hideshow('FSM')" class="w3-bar-item w3-button">FSM</a>
-    <a onclick="hideshow('Graph')" class="w3-bar-item w3-button">Graph Theory</a>
-    <a onclick="hideshow('Halite')" class="w3-bar-item w3-button">Halite</a>
-  </div>
-</nav>
+    <div class="w3-padding-64 w3-large w3-text-grey" style="font-weight:bold">
+      <a onclick="hideshow('Top3')" class="w3-bar-item w3-button">Top 3</a>
+      <a onclick="hideshow('intro')" class="w3-bar-item w3-button">Introduction</a>
+      <a onclick="myAccFunc()" href="javascript:void(0)" class="w3-button w3-block w3-white w3-left-align" id="myBtn">
+        Movement <i class="fa fa-caret-down"></i>
+      </a>
+      <div id="demoAcc" class="w3-bar-block w3-hide w3-padding-large w3-medium">
+        <a onclick="hideshow('Seek')" class="w3-bar-item w3-button">Seeking and Arriving Behavior in Class</a>
+        <a onclick="hideshow('Flee')" class="w3-bar-item w3-button">Flee behavior</a>
+        <a onclick="hideshow('Projec')" class="w3-bar-item w3-button">Projectile</a>
+        <a onclick="hideshow('pygame')" class="w3-bar-item w3-button">Pygame Agent</a>
+        <a onclick="hideshow('Fish')" class="w3-bar-item w3-button">Fish tank simulation</a>
+      </div>
+      <a onclick="hideshow('Random')" class="w3-bar-item w3-button">Randomness</a>
+      <a onclick="hideshow('FSM')" class="w3-bar-item w3-button">FSM</a>
+      <a onclick="hideshow('Graph')" class="w3-bar-item w3-button">Graph Theory</a>
+      <a onclick="hideshow('Halite')" class="w3-bar-item w3-button">Halite</a>
+    </div>
+  </nav>
 
-<!-- Top menu on small screens -->
-<header class="w3-bar w3-top w3-hide-large w3-black w3-xlarge">
-  <div onclick="w3_close()" class="w3-bar-item w3-padding-24 w3-wide">6638018</div>
-  <a href="javascript:void(0)" class="w3-bar-item w3-button w3-padding-24 w3-right" onclick="w3_open()"><i class="fa fa-bars"></i></a>
-</header>
+  <!-- Top menu on small screens -->
+  <header class="w3-bar w3-top w3-hide-large w3-black w3-xlarge">
+    <div onclick="w3_close()" class="w3-bar-item w3-padding-24 w3-wide">6638018</div>
+    <a href="javascript:void(0)" class="w3-bar-item w3-button w3-padding-24 w3-right" onclick="w3_open()"><i
+        class="fa fa-bars"></i></a>
+  </header>
 
-<!-- Overlay effect when opening sidebar on small screens -->
-<div class="w3-overlay w3-hide-large" onclick="w3_close()" style="cursor:pointer" title="close side menu" id="myOverlay"></div>
+  <!-- Overlay effect when opening sidebar on small screens -->
+  <div class="w3-overlay w3-hide-large" onclick="w3_close()" style="cursor:pointer" title="close side menu"
+    id="myOverlay"></div>
 
-<!-- !PAGE CONTENT! -->
-<div class="w3-main" style="margin-left:250px">
+  <!-- !PAGE CONTENT! -->
+  <div class="w3-main" style="margin-left:250px">
 
-  <!-- Push down content on small screens -->
-  <div class="w3-hide-large" style="margin-top:83px"></div>
-  
-  <!-- Top 3 -->
-<div id="Top3">
-    <header class="w3-container w3-xlarge">
+    <!-- Push down content on small screens -->
+    <div class="w3-hide-large" style="margin-top:83px"></div>
+
+    <!-- Top 3 -->
+    <div id="Top3">
+      <header class="w3-container w3-xlarge">
         <p class="w3-left">Top3 Project</p>
         </p>
       </header>
-</div>
+    </div>
 
-  <!-- Introduction -->
-<div id = "intro" style="display: none" >
-    <header class="w3-container w3-xlarge">
+    <!-- Introduction -->
+    <div id="intro" style="display: none">
+      <header class="w3-container w3-xlarge">
         <p class="w3-left">Introduction</p>
         </p>
       </header>
@@ -105,46 +120,50 @@ div.scroll-container img {
             Your browser does not support HTML video.
           </video>
         </div>
-        <div class="column" >
+        <div class="column">
           <b>This project was done to learn seeking behavior.</b>
-          <ul>  <li>The pink dot indicates Target for AI which can be assigned using mouse click on any location.</li>
-            <li>The green dot is the AI with seeking behavior. It will seek the target and orbit around it.</li></ul>
+          <ul>
+            <li>The pink dot indicates Target for AI which can be assigned using mouse click on any location.</li>
+            <li>The green dot is the AI with seeking behavior. It will seek the target and orbit around it.</li>
+          </ul>
           The AI contains:
-          <ul> <li>Acceleration</li>
+          <ul>
+            <li>Acceleration</li>
             <li>Velocity</li>
-              <li> Mass</li>
-                <li> Speed</li></ul>
+            <li> Mass</li>
+            <li> Speed</li>
+          </ul>
         </div>
       </div>
       <div>
         <div class="scroll-container">
           <a target="_blank" href="../Portsite/img/intro_1.PNG">
-            <img src="../Portsite/img/intro_1.PNG" alt="intro_1" >
+            <img src="../Portsite/img/intro_1.PNG" alt="intro_1">
           </a>
           <a target="_blank" href="../Portsite/img/intro_2.PNG">
-            <img src="../Portsite/img/intro_2.PNG" alt="intro_2" >
+            <img src="../Portsite/img/intro_2.PNG" alt="intro_2">
           </a>
           <a target="_blank" href="../Portsite/img/intro_3.PNG">
-            <img src="../Portsite/img/intro_3.PNG" alt="intro_3" >
+            <img src="../Portsite/img/intro_3.PNG" alt="intro_3">
           </a>
           <a target="_blank" href="../Portsite/img/intro_4.PNG">
-            <img src="../Portsite/img/intro_4.PNG" alt="intro_4" >
+            <img src="../Portsite/img/intro_4.PNG" alt="intro_4">
           </a>
           <a target="_blank" href="../Portsite/img/intro_5.PNG">
-            <img src="../Portsite/img/intro_5.PNG" alt="intro_5" >
+            <img src="../Portsite/img/intro_5.PNG" alt="intro_5">
           </a>
         </div>
       </div>
 
     </div>
 
-  <!-- movement -->
-<div id = "Seek" style="display: none" >
-    <header class="w3-container w3-xlarge">
+    <!-- movement -->
+    <div id="Seek" style="display: none">
+      <header class="w3-container w3-xlarge">
         <p class="w3-left">Seeking and Arriving Behavior in Class</p>
         </p>
       </header>
-      
+
       <div class="row">
         <div class="column">
           <video width="400" controls>
@@ -152,41 +171,46 @@ div.scroll-container img {
             Your browser does not support HTML video.
           </video>
         </div>
-        <div class="column" >
+        <div class="column">
           <b>This project was done to learn seeking behavior.</b>
-          <ul>  <li>The pink dot indicates Target for AI which can be assigned using mouse click on any location.</li>
-            <li>The green dot is the AI with seeking behavior. It will seek the target with in the line of sight. It orbit around traget a bit as it does not know when to stop.</li></ul>
+          <ul>
+            <li>The pink dot indicates Target for AI which can be assigned using mouse click on any location.</li>
+            <li>The green dot is the AI with seeking behavior. It will seek the target with in the line of sight. It
+              orbit around traget a bit as it does not know when to stop.</li>
+          </ul>
           The AI contains:
-          <ul> <li>Acceleration</li>
+          <ul>
+            <li>Acceleration</li>
             <li>Velocity</li>
-              <li> Mass</li>
-                <li> Speed</li></ul>
+            <li> Mass</li>
+            <li> Speed</li>
+          </ul>
         </div>
       </div>
       <div>
         <div class="scroll-container">
           <a target="_blank" href="../Portsite/img/Arrive_1.PNG">
-            <img src="../Portsite/img/Arrive_1.PNG" alt="Arrive_1" >
+            <img src="../Portsite/img/Arrive_1.PNG" alt="Arrive_1">
           </a>
           <a target="_blank" href="../Portsite/img/Arrive_2.PNG">
-            <img src="../Portsite/img/Arrive_2.PNG" alt="Arrive_2" >
+            <img src="../Portsite/img/Arrive_2.PNG" alt="Arrive_2">
           </a>
           <a target="_blank" href="../Portsite/img/Arrive_3.PNG">
-            <img src="../Portsite/img/Arrive_3.PNG" alt="Arrive_3" >
+            <img src="../Portsite/img/Arrive_3.PNG" alt="Arrive_3">
           </a>
           <a target="_blank" href="../Portsite/img/Arrive_4.PNG">
-            <img src="../Portsite/img/Arrive_4.PNG" alt="Arrive_4" >
+            <img src="../Portsite/img/Arrive_4.PNG" alt="Arrive_4">
           </a>
           <a target="_blank" href="../Portsite/img/Arrive_5.PNG">
-            <img src="../Portsite/img/Arrive_5.PNG" alt="Arrive_5" >
+            <img src="../Portsite/img/Arrive_5.PNG" alt="Arrive_5">
           </a>
         </div>
       </div>
 
-</div>
+    </div>
 
-<div id = "Flee" style="display: none" >
-    <header class="w3-container w3-xlarge">
+    <div id="Flee" style="display: none">
+      <header class="w3-container w3-xlarge">
         <p class="w3-left">Flee behavior</p>
         </p>
       </header>
@@ -197,40 +221,45 @@ div.scroll-container img {
             Your browser does not support HTML video.
           </video>
         </div>
-        <div class="column" >
+        <div class="column">
           <b>This project done to learn flee behavior.</b>
-          <ul>  <li>The pink dot indicates Target for AI which can be assigned using mouse click on any location.</li>
-            <li>The white dot is the AI with flee behavior. It will flee the traget with in the line of sight. It will stop fleeing when the traget is out of line of sight.</li></ul>
+          <ul>
+            <li>The pink dot indicates Target for AI which can be assigned using mouse click on any location.</li>
+            <li>The white dot is the AI with flee behavior. It will flee the traget with in the line of sight. It will
+              stop fleeing when the traget is out of line of sight.</li>
+          </ul>
           The AI contains:
-          <ul> <li>Acceleration</li>
+          <ul>
+            <li>Acceleration</li>
             <li>Velocity</li>
-              <li> Mass</li>
-                <li> Speed</li></ul>
+            <li> Mass</li>
+            <li> Speed</li>
+          </ul>
         </div>
       </div>
       <div>
         <div class="scroll-container">
           <a target="_blank" href="../Portsite/img/flee_1.PNG">
-            <img src="../Portsite/img/flee_1.PNG" alt="flee_1" >
+            <img src="../Portsite/img/flee_1.PNG" alt="flee_1">
           </a>
           <a target="_blank" href="../Portsite/img/flee_2.PNG">
-            <img src="../Portsite/img/flee_2.PNG" alt="flee_2" >
+            <img src="../Portsite/img/flee_2.PNG" alt="flee_2">
           </a>
           <a target="_blank" href="../Portsite/img/flee_3.PNG">
-            <img src="../Portsite/img/flee_3.PNG" alt="flee_3" >
+            <img src="../Portsite/img/flee_3.PNG" alt="flee_3">
           </a>
           <a target="_blank" href="../Portsite/img/flee_4.PNG">
-            <img src="../Portsite/img/flee_4.PNG" alt="flee_4" >
+            <img src="../Portsite/img/flee_4.PNG" alt="flee_4">
           </a>
           <a target="_blank" href="../Portsite/img/flee_5.PNG">
-            <img src="../Portsite/img/flee_5.PNG" alt="flee_5" >
+            <img src="../Portsite/img/flee_5.PNG" alt="flee_5">
           </a>
         </div>
       </div>
-</div>
+    </div>
 
-<div id = "Projec" style="display: none" >
-    <header class="w3-container w3-xlarge">
+    <div id="Projec" style="display: none">
+      <header class="w3-container w3-xlarge">
         <p class="w3-left">Projectile</p>
         </p>
       </header>
@@ -242,135 +271,394 @@ div.scroll-container img {
             Your browser does not support HTML video.
           </video>
         </div>
-        <div class="column" >
+        <div class="column">
           <b>This project was done to learn projectile motion.</b>
-          <ul>  The user clicks on any location on the screen to create an angle with the floor. When clicked, the green drop will launch according to the angle created and the length of how far away the clicked point is from the bottom left point. </ul>
+          <ul> The user clicks on any location on the screen to create an angle with the floor. When clicked, the green
+            drop will launch according to the angle created and the length of how far away the clicked point is from the
+            bottom left point. </ul>
           The AI contains:
-          <ul> <li>Acceleration</li>
+          <ul>
+            <li>Acceleration</li>
             <li>Velocity</li>
-              <li> Mass</li>
-                <li> Speed</li></ul>
+            <li> Mass</li>
+            <li> Speed</li>
+          </ul>
         </div>
       </div>
       <div>
         <div class="scroll-container">
           <a target="_blank" href="../Portsite/img/Proj_1.PNG">
-            <img src="../Portsite/img/Proj_1.PNG" alt="Proj_1" >
+            <img src="../Portsite/img/Proj_1.PNG" alt="Proj_1">
           </a>
           <a target="_blank" href="../Portsite/img/Proj_2.PNG">
-            <img src="../Portsite/img/Proj_2.PNG" alt="Proj_2" >
+            <img src="../Portsite/img/Proj_2.PNG" alt="Proj_2">
           </a>
           <a target="_blank" href="../Portsite/img/Proj_3.PNG">
-            <img src="../Portsite/img/Proj_3.PNG" alt="Proj_3" >
+            <img src="../Portsite/img/Proj_3.PNG" alt="Proj_3">
           </a>
           <a target="_blank" href="../Portsite/img/Proj_4.PNG">
-            <img src="../Portsite/img/Proj_4.PNG" alt="Proj_4" >
+            <img src="../Portsite/img/Proj_4.PNG" alt="Proj_4">
           </a>
           <a target="_blank" href="../Portsite/img/Proj_5.PNG">
-            <img src="../Portsite/img/Proj_5.PNG" alt="Proj_5" >
+            <img src="../Portsite/img/Proj_5.PNG" alt="Proj_5">
           </a>
         </div>
       </div>
 
-</div>
+    </div>
 
-<div id = "pygame" style="display: none" >
-    <header class="w3-container w3-xlarge">
+    <div id="pygame" style="display: none">
+      <header class="w3-container w3-xlarge">
         <p class="w3-left">Pygame Agent</p>
         </p>
       </header>
-      <div id = "Seek"></div>
-</div>
 
-<div id = "Fish"style="display: none" >
-    <header class="w3-container w3-xlarge">
+      <div class="row">
+        <div class="column">
+          <video width="400" controls>
+            <source src="../Portsite/vid/Agent.mp4" type="video/mp4">
+            Your browser does not support HTML video.
+          </video>
+        </div>
+        <div class="column">
+          <b>This project was done to learn creating AI with seekign behavior using pygame.</b>
+          <ul>
+            <li>The red dot indicates Target for AI which can be assigned using mouse click on any location.</li>
+            <li>The black dot is the AI with seeking behavior. It will seek the target with in the line of sight. It
+              orbit around traget a bit as it does not know when to stop.</li>
+          </ul>
+          The AI contains:
+          <ul>
+            <li>Acceleration</li>
+            <li>Velocity</li>
+            <li> Mass</li>
+            <li> Speed</li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <div class="scroll-container">
+          <a target="_blank" href="../Portsite/img/Agent_1.PNG">
+            <img src="../Portsite/img/Agent_1.PNG" alt="Agent_1">
+          </a>
+          <a target="_blank" href="../Portsite/img/Agent_2.PNG">
+            <img src="../Portsite/img/Agent_2.PNG" alt="Agent_2">
+          </a>
+          <a target="_blank" href="../Portsite/img/Agent_3.PNG">
+            <img src="../Portsite/img/Agent_3.PNG" alt="Agent_3">
+          </a>
+          <a target="_blank" href="../Portsite/img/Agent_4.PNG">
+            <img src="../Portsite/img/Agent_4.PNG" alt="Agent_4">
+          </a>
+          <a target="_blank" href="../Portsite/img/Agent_5.PNG">
+            <img src="../Portsite/img/Agent_5.PNG" alt="Agent_5">
+          </a>
+        </div>
+      </div>
+
+    </div>
+
+    <div id="Fish" style="display: none">
+      <header class="w3-container w3-xlarge">
         <p class="w3-left">Fish tank simulation</p>
         </p>
       </header>
-      <div id = "Seek"></div>
-</div>
 
-  <!-- Randomness -->
-<div id = "Random" style="display: none" >
-    <header class="w3-container w3-xlarge">
+      <div class="row">
+        <div class="column">
+          <video width="400" controls>
+            <source src="../Portsite/vid/Fish.mp4" type="video/mp4">
+            Your browser does not support HTML video.
+          </video>
+        </div>
+        <div class="column">
+          <b>This project was done to create fish tank simulation.</b>
+          <ul> Fish is an AI that swims into the food the player gives and avoids rocks. The player can feed them by
+            clicking anywhere beside the rock. All sprites are hand-drawn. </ul>
+          The AI contains:
+          <ul>
+            <li>Seek Behavior</li>
+            <li>Flee Behavior</li>
+            <li> Coherence (Follow other AI)</li>
+            <li>Seperation (Avoid overlap with other AI)</li>
+            <li>Alignment (Go same way as nearby AI)</li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <div class="scroll-container">
+          <a target="_blank" href="../Portsite/img/fish_1.PNG">
+            <img src="../Portsite/img/fish_1.PNG" alt="fish_1">
+          </a>
+          <a target="_blank" href="../Portsite/img/fish_2.PNG">
+            <img src="../Portsite/img/fish_2.PNG" alt="fish_2">
+          </a>
+          <a target="_blank" href="../Portsite/img/fish_3.PNG">
+            <img src="../Portsite/img/fish_3.PNG" alt="fish_3">
+          </a>
+          <a target="_blank" href="../Portsite/img/fish_4.PNG">
+            <img src="../Portsite/img/fish_4.PNG" alt="fish_4">
+          </a>
+          <a target="_blank" href="../Portsite/img/fish_5.PNG">
+            <img src="../Portsite/img/fish_5.PNG" alt="fish_5">
+          </a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Randomness -->
+    <div id="Random" style="display: none">
+      <header class="w3-container w3-xlarge">
         <p class="w3-left">Randomness</p>
         </p>
       </header>
-      <div id = "Seek"></div>
-</div>
 
-  <!-- FSM -->
-<div id = "FSM" style="display: none" >
-    <header class="w3-container w3-xlarge">
+      <div class="row">
+        <div class="column">
+          <video width="400" controls>
+            <source src="../Portsite/vid/Random.mp4" type="video/mp4">
+            Your browser does not support HTML video.
+          </video>
+        </div>
+        <div class="column">
+          <b>This project was done to learn about creating RNG in games.</b>
+          <ul> The player clicks on big dirt in the middle of the screen to try to ding. Every time a player digs, there
+            is a 50% chance to succeed and gain either dirt or minerals. There is a 30% chance of getting minerals.
+            There are 3 kinds of minerals players can get which are Iron(85%), Gold(10%), and Diamond(5%). </ul>
+          <ul> Due to the nature of the game being boring, an additional goal is added. Players need to mine 1000
+            Diamonds to save their friend who is in jail from a tax invasion. The player can convert dirt and minerals
+            into its higher tiers in a 1:10 ratio. The player can keep playing the game even if they saved their friend.
+          </ul>
+          Random function contains:
+          <ul>
+            <li>Marble Bag</li>
+            <li>Predetermination</li>
+            <li> Progressive</li>
+            <li>Fixed Rate Probability</li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <div class="scroll-container">
+          <a target="_blank" href="../Portsite/img/Random_1.PNG">
+            <img src="../Portsite/img/Random_1.PNG" alt="Random_1">
+          </a>
+          <a target="_blank" href="../Portsite/img/Random_2.PNG">
+            <img src="../Portsite/img/Random_2.PNG" alt="Random_2">
+          </a>
+          <a target="_blank" href="../Portsite/img/Random_3.PNG">
+            <img src="../Portsite/img/Random_3.PNG" alt="Random_3">
+          </a>
+          <a target="_blank" href="../Portsite/img/Random_4.PNG">
+            <img src="../Portsite/img/Random_4.PNG" alt="Random_4">
+          </a>
+          <a target="_blank" href="../Portsite/img/Random_5.PNG">
+            <img src="../Portsite/img/Random_5.PNG" alt="Random_5">
+          </a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- FSM -->
+    <div id="FSM" style="display: none">
+      <header class="w3-container w3-xlarge">
         <p class="w3-left">FSM</p>
         </p>
       </header>
-      <div id = "Seek"></div>
-</div>
 
-  <!-- Graph Theory -->
-<div id = "Graph" style="display: none" >
-    <header class="w3-container w3-xlarge">
+      <div class="row">
+        <div class="column">
+          <video width="400" controls>
+            <source src="../Portsite/vid/State.mp4" type="video/mp4">
+            Your browser does not support HTML video.
+          </video>
+        </div>
+        <div class="column">
+          <b>This project was done to learn about finite state machine.</b>
+          <ul> The system is themed as 'Guard VS Gnome'. Guard is the AI with FSM. The user clicks anywhere on the
+            screen to summon the gnome. Gnome will walk randomly around the screen. When a gnome steps on bone, It will
+            make a sound to alert any guard nearby.
+          </ul>
+          AI has stated as follows:
+          <ul>
+            <li>Idle (stay still, is switch between Patrol)</li>
+            <li>Patrol (walking around, is switched between Idle)</li>
+            <li>Investigate (Walk to bone when hear a sound)</li>
+            <li>Chase (Chase and capture nearby gnome)</li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <div class="scroll-container">
+          <a target="_blank" href="../Portsite/img/state_1.PNG">
+            <img src="../Portsite/img/state_1.PNG" alt="state_1">
+          </a>
+          <a target="_blank" href="../Portsite/img/state_2.PNG">
+            <img src="../Portsite/img/state_2.PNG" alt="state_2">
+          </a>
+          <a target="_blank" href="../Portsite/img/state_3.PNG">
+            <img src="../Portsite/img/state_3.PNG" alt="state_3">
+          </a>
+          <a target="_blank" href="../Portsite/img/state_4.PNG">
+            <img src="../Portsite/img/state_4.PNG" alt="state_4">
+          </a>
+          <a target="_blank" href="../Portsite/img/state_5.PNG">
+            <img src="../Portsite/img/state_5.PNG" alt="state_5">
+          </a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Graph Theory -->
+    <div id="Graph" style="display: none">
+      <header class="w3-container w3-xlarge">
         <p class="w3-left">Graph Theory</p>
         </p>
       </header>
-      <div id = "Seek"></div>
-</div>
 
-  <!-- Halite -->
-<div id = "Halite" style="display: none" >
-    <header class="w3-container w3-xlarge">
+      <div class="row">
+        <div class="column">
+          <video width="400" controls>
+            <source src="../Portsite/vid/Proj.mp4" type="video/mp4">
+            Your browser does not support HTML video.
+          </video>
+        </div>
+        <div class="column">
+          <b>This project was done to learn projectile motion.</b>
+          <ul> The user clicks on any location on the screen to create an angle with the floor. When clicked, the green
+            drop will launch according to the angle created and the length of how far away the clicked point is from the
+            bottom left point. </ul>
+          The AI contains:
+          <ul>
+            <li>Acceleration</li>
+            <li>Velocity</li>
+            <li> Mass</li>
+            <li> Speed</li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <div class="scroll-container">
+          <a target="_blank" href="../Portsite/img/Proj_1.PNG">
+            <img src="../Portsite/img/Proj_1.PNG" alt="Proj_1">
+          </a>
+          <a target="_blank" href="../Portsite/img/Proj_2.PNG">
+            <img src="../Portsite/img/Proj_2.PNG" alt="Proj_2">
+          </a>
+          <a target="_blank" href="../Portsite/img/Proj_3.PNG">
+            <img src="../Portsite/img/Proj_3.PNG" alt="Proj_3">
+          </a>
+          <a target="_blank" href="../Portsite/img/Proj_4.PNG">
+            <img src="../Portsite/img/Proj_4.PNG" alt="Proj_4">
+          </a>
+          <a target="_blank" href="../Portsite/img/Proj_5.PNG">
+            <img src="../Portsite/img/Proj_5.PNG" alt="Proj_5">
+          </a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Halite -->
+    <div id="Halite" style="display: none">
+      <header class="w3-container w3-xlarge">
         <p class="w3-left">Halite</p>
         </p>
       </header>
-      <div id = "Seek"></div>
-</div>
 
-  <!-- Footer -->
+      <div class="row">
+        <div class="column">
+          <video width="400" controls>
+            <source src="../Portsite/vid/Proj.mp4" type="video/mp4">
+            Your browser does not support HTML video.
+          </video>
+        </div>
+        <div class="column">
+          <b>This project was done to learn projectile motion.</b>
+          <ul> The user clicks on any location on the screen to create an angle with the floor. When clicked, the green
+            drop will launch according to the angle created and the length of how far away the clicked point is from the
+            bottom left point. </ul>
+          The AI contains:
+          <ul>
+            <li>Acceleration</li>
+            <li>Velocity</li>
+            <li> Mass</li>
+            <li> Speed</li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <div class="scroll-container">
+          <a target="_blank" href="../Portsite/img/Proj_1.PNG">
+            <img src="../Portsite/img/Proj_1.PNG" alt="Proj_1">
+          </a>
+          <a target="_blank" href="../Portsite/img/Proj_2.PNG">
+            <img src="../Portsite/img/Proj_2.PNG" alt="Proj_2">
+          </a>
+          <a target="_blank" href="../Portsite/img/Proj_3.PNG">
+            <img src="../Portsite/img/Proj_3.PNG" alt="Proj_3">
+          </a>
+          <a target="_blank" href="../Portsite/img/Proj_4.PNG">
+            <img src="../Portsite/img/Proj_4.PNG" alt="Proj_4">
+          </a>
+          <a target="_blank" href="../Portsite/img/Proj_5.PNG">
+            <img src="../Portsite/img/Proj_5.PNG" alt="Proj_5">
+          </a>
+        </div>
+      </div>
 
-  <div class="w3-black w3-center w3-padding-24">Powered by <a href="https://www.w3schools.com/w3css/default.asp" title="W3.CSS" target="_blank" class="w3-hover-opacity">w3.css</a></div>
+    </div>
 
-  <!-- End page content -->
-</div>
+    <!-- Footer -->
 
-<!-- Newsletter Modal -->
+    <div class="w3-black w3-center w3-padding-24">Powered by <a href="https://www.w3schools.com/w3css/default.asp"
+        title="W3.CSS" target="_blank" class="w3-hover-opacity">w3.css</a></div>
 
-<script>
-// Accordion 
-function myAccFunc() {
-  var x = document.getElementById("demoAcc");
-  if (x.className.indexOf("w3-show") == -1) {
-    x.className += " w3-show";
-  } else {
-    x.className = x.className.replace(" w3-show", "");
-  }
-}
+    <!-- End page content -->
+  </div>
 
-// Click on the "Jeans" link on page load to open the accordion for demo purposes
-document.getElementById("myBtn").click();
+  <!-- Newsletter Modal -->
 
-function hideshow(name) {
-    var A = ["Top3","intro", "Seek","Flee","Projec","pygame","Fish", "Random","FSM","Graph","Halite"]
-    for (var i =0;i< A.length;i++ ){
-        if (A[i]!=name){
-            var x = document.getElementById(A[i]);
-            x.style.display = "none";
-        }
+  <script>
+    // Accordion 
+    function myAccFunc() {
+      var x = document.getElementById("demoAcc");
+      if (x.className.indexOf("w3-show") == -1) {
+        x.className += " w3-show";
+      } else {
+        x.className = x.className.replace(" w3-show", "");
+      }
     }
-  var x = document.getElementById(name);
-  x.style.display =  "block";
-}
-// Open and close sidebar
-function w3_open() {
-  document.getElementById("mySidebar").style.display = "block";
-  document.getElementById("myOverlay").style.display = "block";
-}
- 
-function w3_close() {
-  document.getElementById("mySidebar").style.display = "none";
-  document.getElementById("myOverlay").style.display = "none";
-}
-</script>
+
+    // Click on the "Jeans" link on page load to open the accordion for demo purposes
+    document.getElementById("myBtn").click();
+
+    function hideshow(name) {
+      var A = ["Top3", "intro", "Seek", "Flee", "Projec", "pygame", "Fish", "Random", "FSM", "Graph", "Halite"]
+      for (var i = 0; i < A.length; i++) {
+        if (A[i] != name) {
+          var x = document.getElementById(A[i]);
+          x.style.display = "none";
+        }
+      }
+      var x = document.getElementById(name);
+      x.style.display = "block";
+    }
+    // Open and close sidebar
+    function w3_open() {
+      document.getElementById("mySidebar").style.display = "block";
+      document.getElementById("myOverlay").style.display = "block";
+    }
+
+    function w3_close() {
+      document.getElementById("mySidebar").style.display = "none";
+      document.getElementById("myOverlay").style.display = "none";
+    }
+  </script>
 
 </body>
+
 </html>

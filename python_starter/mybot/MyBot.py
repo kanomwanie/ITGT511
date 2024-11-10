@@ -9,7 +9,7 @@ from hlt import constants
 
 # This library contains direction metadata to better interface with the game.
 from hlt.positionals import Direction
-
+from hlt.positionals import Position as PP
 # This library allows you to generate random numbers.
 import random
 
@@ -30,8 +30,19 @@ game.ready("L.I.G.M.A. MKI")
 #   Here, you log here your id, which you can always fetch from the game object by using my_id.
 logging.info("Successfully created bot! My Player ID is {}.".format(game.my_id))
 
+def get8 (arr,ship):
+    A = arr
+    for i in range(len(arr)):
+        if arr[i].x - ship.position.x ==-1  or arr[i].x- ship.position.x ==1:
+            B= PP(arr[i].x,arr[i].x-1)
+            C= PP(arr[i].x,arr[i].y+1)
+            A.append(B)
+            A.append(C)
+    return A
+
 def findenemy(ship,map):
-    direcmap = ship.position.get_surrounding_cardinals()
+    direcmap = get8(ship.position.get_surrounding_cardinals(),ship)
+   # direcmap = ship.position.get_surrounding_cardinals()
     for i in direcmap:
         if map[i].is_occupied:
             map[i].mark_unsafe(ship)

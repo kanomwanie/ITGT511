@@ -1,5 +1,5 @@
 # ITGT511
 Assignment only
 
-Portfolio Website (WIP)
-https://kanomwanie.github.io/ITGT511/Portsite/index.html
+Portfolio Website 
+[https://kanomwanie.github.io/ITGT511/Portsite/index.html](https://kanomwanie.github.io/ITGT511/Portsite/index.html)

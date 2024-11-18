@@ -16,8 +16,7 @@ import random
 # Logging allows you to save messages for yourself. This is required because the regular STDOUT
 #   (print statements) are reserved for the engine-bot communication.
 import logging
-import heapq
-from typing import Protocol, Iterator, Tuple, TypeVar, Optional
+
 """ <<<Game Begin>>> """
 
 # This game object contains the initial game state.
@@ -25,106 +24,11 @@ game = hlt.Game()
 # At this point "game" variable is populated with initial map data.
 # This is a good place to do computationally expensive start-up pre-processing.
 # As soon as you call "ready" function below, the 2 second per turn timer will start.
-game.ready("L.I.G.M.A. MKII")
+game.ready("L.I.G.M.A. MKI")
 
 # Now that your bot is initialized, save a message to yourself in the log file with some important information.
 #   Here, you log here your id, which you can always fetch from the game object by using my_id.
 logging.info("Successfully created bot! My Player ID is {}.".format(game.my_id))
-
-T = TypeVar('T')
-Location = TypeVar('Location')
-GridLocation = Tuple[int, int]
-class SquareGrid:
-    def __init__(self, width: int, height: int):
-        self.width = width
-        self.height = height
-        self.walls: list[GridLocation] = []
-    
-    def in_bounds(self, id: GridLocation) -> bool:
-        (x, y) = id
-        return 0 <= x < self.width and 0 <= y < self.height
-    
-    def passable(self, id: GridLocation) -> bool:
-        return id not in self.walls
-    
-    def neighbors(self, id: GridLocation) -> Iterator[GridLocation]:
-        (x, y) = id
-        neighbors = [(x+1, y), (x-1, y), (x, y-1), (x, y+1)] # E W N S
-        # see "Ugly paths" section for an explanation:
-        if (x + y) % 2 == 0: neighbors.reverse() # S N W E
-        results = filter(self.in_bounds, neighbors)
-        results = filter(self.passable, results)
-        return results
-
-class GridWithWeights(SquareGrid):
-    def __init__(self, width: int, height: int):
-        super().__init__(width, height)
-        self.weights: dict[GridLocation, float] = {}
-    
-    def cost(self, from_node: GridLocation, to_node: GridLocation,map) -> float:
-        p = PP(to_node[0],to_node[1])
-        return self.weights.get(to_node, getmovecost(p,map))
-
-class PriorityQueue:
-    def __init__(self):
-        self.elements: list[tuple[float, T]] = []
-    
-    def empty(self) -> bool:
-        return not self.elements
-    
-    def put(self, item: T, priority: float):
-        heapq.heappush(self.elements, (priority, item))
-    
-    def get(self) -> T:
-        return heapq.heappop(self.elements)[1]
-
-def heuristic(a, b):
-   # Manhattan distance on a square grid
-   return abs(a[0] - b[0]) + abs(a[1] - b[1])
-
-def starpath(start,goal,graph,map):
-    frontier = PriorityQueue()
-    frontier.put(start, 0)
-    came_from = dict()
-    cost_so_far = dict()
-    came_from[start] = None
-    cost_so_far[start] = 0
-
-    while not frontier.empty():
-        current = frontier.get()
-        check = PP(current[0],current[1])
-        if current != start:
-            if not map[check].is_occupied:
-                if current == goal:
-                    return getpathlist(cost_so_far)
-                for next in graph.neighbors(current):
-                    new_cost = cost_so_far[current] + graph.cost(current, next,map)
-                    if next not in cost_so_far or new_cost < cost_so_far[next]:
-                        cost_so_far[next] = new_cost
-                        priority = new_cost + heuristic(goal, next)
-                        frontier.put(next, priority)
-                        came_from[next] = current
-        else:
-                if current == goal:
-                    return getpathlist(cost_so_far)
-                for next in graph.neighbors(current):
-                    new_cost = cost_so_far[current] + graph.cost(current, next,map)
-                    if next not in cost_so_far or new_cost < cost_so_far[next]:
-                        cost_so_far[next] = new_cost
-                        priority = new_cost + heuristic(goal, next)
-                        frontier.put(next, priority)
-                        came_from[next] = current
-
-def getpathlist(stuff):
-    A = []
-    cost = set(stuff.values())
-    for i in cost:
-        path = (0,0)
-        for j in stuff.keys():
-            if i == stuff[j]:
-                path = j
-        A.append(path)
-    return A
 
 def get8 (arr,ship):
     A = arr
@@ -137,7 +41,8 @@ def get8 (arr,ship):
     return A
 
 def findenemy(ship,map):
-    direcmap = ship.position.get_surrounding_cardinals()
+    direcmap = get8(ship.position.get_surrounding_cardinals(),ship)
+   # direcmap = ship.position.get_surrounding_cardinals()
     for i in direcmap:
         if map[i].is_occupied:
             map[i].mark_unsafe(ship)
@@ -167,7 +72,7 @@ def findoff(me,map,ship):
         return [True,-1]
     return [False,L]
 
-def convert_to_direction(pos,next,map,ship):
+def convert_to_direction(pos,next):
     if pos.x-next.x == 1 and pos.y-next.y ==0:
         return Direction.East
     elif pos.x-next.x == -1 and pos.y-next.y ==0:
@@ -176,11 +81,8 @@ def convert_to_direction(pos,next,map,ship):
         return Direction.North
     elif pos.x-next.x == 0 and pos.y-next.y ==-1:
         return Direction.South
-    return map.naive_navigate(ship, PP(next.x,next.y))
     
 def getmovecost(position,map):
-    if map[position].halite_amount == 0:
-        return 0
     return int((100 /map[position].halite_amount)*10)
 
 def candrop(map,me):
@@ -208,26 +110,14 @@ def moving(me,map,ship):
     #aim fore nearest area with most stuff
     #when full- aim to drop off
     findenemy(ship,map)
-    G = GridWithWeights(map.width,map.height)
     if ship.is_full or ship.halite_amount > 700:
-        logging.info(ship.id)
-        logging.info("get dropoff")
-        logging.info(ship.halite_amount)
         drop = findoff(me,map,ship)
         if drop[0]:
             return ship.stay_still()
         else:
-            A = starpath((ship.position.x,ship.position.y),(drop[1].x,drop[1].y),G,map)
-            logging.info(A)
-            TT = PP(A[1][0],A[1][1])
-            return ship.move(convert_to_direction(ship.position,TT,map,ship))
+            return ship.move(map.naive_navigate(ship, drop[1]))
     else:
-        logging.info(ship.id)
-        logging.info("get halite")
-        logging.info(ship.halite_amount)
         A = findsource(ship,map)
-        if map[ship.position].halite_amount>10:
-            return ship.stay_still()
         return ship.move( map.naive_navigate(ship, A))
     
 def leasthalite(me):
